@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <text
+    x="512"
+    y="560"
+    fill="#000"
+    font-family="Avenir Next, Avenir, Arial Black, Arial, sans-serif"
+    font-size="300"
+    font-weight="900"
+    text-anchor="middle"
+  >B&amp;F</text>
+  <path
+    d="M704 190 C776 274 824 372 806 486 C794 566 748 620 666 646 C588 670 512 648 448 606"
+    fill="none"
+    stroke="#000"
+    stroke-linecap="round"
+    stroke-width="22"
+  />
+  <path
+    d="M276 704 C396 788 588 792 742 704"
+    fill="none"
+    stroke="#000"
+    stroke-linecap="round"
+    stroke-width="24"
+  />
+</svg>
