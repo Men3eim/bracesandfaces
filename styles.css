@@ -56,6 +56,17 @@ canvas {
   overflow: hidden;
 }
 
+.stage {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  justify-items: center;
+  gap: 16px;
+  width: min(92vw, 760px);
+  padding: 28px 20px;
+  text-align: center;
+}
+
 .landing::before {
   position: absolute;
   inset: -20%;
@@ -177,6 +188,38 @@ canvas {
   pointer-events: none;
 }
 
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding: 10px 16px;
+  border: 1px solid rgba(18, 74, 132, 0.14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.58);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.72),
+    0 18px 50px rgba(8, 41, 71, 0.08);
+  color: var(--navy);
+  font-family: "Avenir Next", Avenir, Helvetica Neue, Helvetica, Arial, sans-serif;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  animation: fadeUp 820ms 120ms cubic-bezier(0.2, 0.9, 0.2, 1) both;
+}
+
+.eyebrow::before {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 10px rgba(216, 111, 98, 0.14);
+  content: "";
+}
+
 .logo-mark {
   position: relative;
   z-index: 3;
@@ -193,6 +236,30 @@ canvas {
   animation: logoEnter 950ms cubic-bezier(0.2, 0.9, 0.2, 1) both, logoFloat 6.5s 1s ease-in-out infinite;
 }
 
+.launch-line,
+.doctor-line {
+  margin: 0;
+  max-width: 28ch;
+}
+
+.launch-line {
+  color: var(--navy-deep);
+  font-family: "Avenir Next", Avenir, Helvetica Neue, Helvetica, Arial, sans-serif;
+  font-size: clamp(1.35rem, 2.4vw, 2rem);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+  animation: fadeUp 920ms 220ms cubic-bezier(0.2, 0.9, 0.2, 1) both;
+}
+
+.doctor-line {
+  color: rgba(8, 41, 71, 0.66);
+  font-size: clamp(0.92rem, 1.4vw, 1.02rem);
+  font-weight: 500;
+  line-height: 1.5;
+  animation: fadeUp 980ms 300ms cubic-bezier(0.2, 0.9, 0.2, 1) both;
+}
+
 @keyframes logoEnter {
   from {
     opacity: 0;
@@ -202,6 +269,19 @@ canvas {
   to {
     opacity: 1;
     transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
   }
 }
 
@@ -262,6 +342,11 @@ canvas {
 }
 
 @media (max-width: 720px) {
+  .stage {
+    gap: 14px;
+    padding: 22px 18px;
+  }
+
   .texture {
     background-position: 68% center;
     background-size: auto 92%;
@@ -275,11 +360,35 @@ canvas {
   .logo-mark {
     width: min(78vw, 380px);
   }
+
+  .eyebrow {
+    padding: 9px 14px;
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+  }
+
+  .launch-line {
+    max-width: 18ch;
+  }
 }
 
 @media (max-width: 380px) {
+  .stage {
+    gap: 12px;
+    padding: 18px 14px;
+  }
+
   .logo-mark {
     width: min(82vw, 310px);
+  }
+
+  .eyebrow {
+    font-size: 0.66rem;
+  }
+
+  .doctor-line {
+    max-width: 24ch;
+    font-size: 0.88rem;
   }
 }
 
