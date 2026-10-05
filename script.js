@@ -1,91 +1,111 @@
+// Clinic contact settings. Add the WhatsApp number (international format, digits only,
+// e.g. "201001234567") to send booking requests straight to WhatsApp.
+// While it is empty, the request is copied and the visitor is sent to Instagram Direct.
+const CLINIC = {
+  whatsapp: "",
+  instagram: "braces.and.faces",
+};
+
+const root = document.documentElement;
+root.classList.replace("no-js", "js");
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-const landing = document.querySelector(".landing");
-const canvas = document.querySelector(".motion-field");
 
-if (!prefersReducedMotion && landing) {
-  window.addEventListener(
-    "pointermove",
-    (event) => {
-      const x = event.clientX / window.innerWidth - 0.5;
-      const y = event.clientY / window.innerHeight - 0.5;
+/* Header */
+const header = document.querySelector("[data-header]");
+const onScroll = () => header?.classList.toggle("is-scrolled", window.scrollY > 8);
+window.addEventListener("scroll", onScroll, { passive: true });
+onScroll();
 
-      landing.style.setProperty("--move-x", `${x * 18}px`);
-      landing.style.setProperty("--move-y", `${y * 14}px`);
-      landing.style.setProperty("--logo-x", `${x * 10}px`);
-      landing.style.setProperty("--logo-y", `${y * 8}px`);
-      landing.style.setProperty("--tilt-x", `${x * 4}`);
-      landing.style.setProperty("--tilt-y", `${y * 4}`);
-    },
-    { passive: true },
-  );
-}
+/* Mobile menu */
+const nav = document.querySelector("[data-nav]");
+const menuToggle = document.querySelector("[data-menu-toggle]");
 
-if (canvas && !prefersReducedMotion) {
-  const ctx = canvas.getContext("2d");
-  const strands = [];
-  let width = 0;
-  let height = 0;
-  let frameId = 0;
-  let time = 0;
+const setMenu = (open) => {
+  nav?.classList.toggle("is-open", open);
+  menuToggle?.setAttribute("aria-expanded", String(open));
+  if (menuToggle) menuToggle.textContent = open ? "Close" : "Menu";
+};
 
-  const resize = () => {
-    const ratio = Math.min(window.devicePixelRatio || 1, 2);
-    width = window.innerWidth;
-    height = window.innerHeight;
-    canvas.width = Math.floor(width * ratio);
-    canvas.height = Math.floor(height * ratio);
-    canvas.style.width = `${width}px`;
-    canvas.style.height = `${height}px`;
-    ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+menuToggle?.addEventListener("click", () => setMenu(!nav.classList.contains("is-open")));
+nav?.querySelectorAll("a").forEach((link) => link.addEventListener("click", () => setMenu(false)));
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") setMenu(false);
+});
 
-    strands.length = 0;
-    const count = Math.max(6, Math.min(12, Math.floor(width / 120)));
-
-    for (let i = 0; i < count; i += 1) {
-      strands.push({
-        y: (height / (count + 1)) * (i + 1),
-        amplitude: 18 + Math.random() * 30,
-        speed: 0.004 + Math.random() * 0.006,
-        offset: Math.random() * Math.PI * 2,
-        alpha: 0.06 + Math.random() * 0.07,
+/* Scroll reveal */
+const revealNodes = document.querySelectorAll("[data-reveal]");
+if (prefersReducedMotion || !("IntersectionObserver" in window)) {
+  revealNodes.forEach((node) => node.classList.add("is-visible"));
+} else {
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("is-visible");
+        observer.unobserve(entry.target);
       });
-    }
-  };
-
-  const draw = () => {
-    time += 1;
-    ctx.clearRect(0, 0, width, height);
-
-    strands.forEach((strand, index) => {
-      ctx.beginPath();
-
-      for (let x = -40; x <= width + 40; x += 24) {
-        const wave =
-          strand.y +
-          Math.sin(x * 0.009 + time * strand.speed + strand.offset) * strand.amplitude +
-          Math.cos(x * 0.004 + time * strand.speed * 1.6) * (strand.amplitude * 0.42);
-
-        if (x === -40) {
-          ctx.moveTo(x, wave);
-        } else {
-          ctx.lineTo(x, wave);
-        }
-      }
-
-      ctx.strokeStyle =
-        index % 3 === 0
-          ? `rgba(216, 111, 98, ${strand.alpha})`
-          : `rgba(18, 74, 132, ${strand.alpha})`;
-      ctx.lineWidth = index % 3 === 0 ? 1.4 : 1;
-      ctx.stroke();
-    });
-
-    frameId = requestAnimationFrame(draw);
-  };
-
-  window.addEventListener("resize", resize, { passive: true });
-  resize();
-  draw();
-
-  window.addEventListener("pagehide", () => cancelAnimationFrame(frameId));
+    },
+    { rootMargin: "0px 0px -10% 0px" },
+  );
+  revealNodes.forEach((node) => observer.observe(node));
 }
+
+/* Booking form */
+const form = document.querySelector("[data-booking-form]");
+const note = document.querySelector("[data-form-note]");
+
+const showNote = (text, type) => {
+  note.textContent = text;
+  note.className = type ? `form-note is-${type}` : "form-note";
+};
+
+form?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const data = new FormData(form);
+  let valid = true;
+
+  ["name", "phone", "interest"].forEach((field) => {
+    const input = form.elements[field];
+    const ok = String(data.get(field) || "").trim().length > 0;
+    input.setAttribute("aria-invalid", String(!ok));
+    if (!ok) valid = false;
+  });
+
+  if (!valid) {
+    showNote("Add your name, phone number and treatment to send the request.", "error");
+    form.querySelector('[aria-invalid="true"]')?.focus();
+    return;
+  }
+
+  const lines = [
+    "Hello Braces & Faces, I'd like to book a consultation.",
+    `Name: ${data.get("name")}`,
+    `Phone: ${data.get("phone")}`,
+    `Treatment: ${data.get("interest")}`,
+  ];
+  const message = String(data.get("message") || "").trim();
+  if (message) lines.push(`Message: ${message}`);
+  const text = lines.join("\n");
+
+  if (CLINIC.whatsapp) {
+    showNote("Opening WhatsApp with your request…", "success");
+    window.open(`https://wa.me/${CLINIC.whatsapp}?text=${encodeURIComponent(text)}`, "_blank", "noopener");
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch {
+    /* clipboard unavailable; the visitor can still type in the chat */
+  }
+  showNote("Request copied. Paste it into our Instagram chat to send it.", "success");
+  window.open(`https://ig.me/m/${CLINIC.instagram}`, "_blank", "noopener");
+});
+
+form?.querySelectorAll("input, select").forEach((input) => {
+  input.addEventListener("input", () => input.removeAttribute("aria-invalid"));
+});
+
+document.querySelectorAll("[data-year]").forEach((node) => {
+  node.textContent = new Date().getFullYear();
+});
