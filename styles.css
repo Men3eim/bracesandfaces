@@ -572,6 +572,23 @@ h3 {
   max-width: none;
 }
 
+.page-hero-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  align-items: center;
+  gap: clamp(48px, 7vw, 112px);
+}
+
+.page-hero-figure img {
+  width: 100%;
+  height: auto;
+  max-height: 640px;
+  aspect-ratio: 4 / 5;
+  border-radius: var(--radius);
+  object-fit: cover;
+  object-position: center 30%;
+}
+
 .page-hero-media {
   margin-top: clamp(48px, 6vw, 80px);
 }
@@ -1364,6 +1381,7 @@ h3 {
   }
 
   .hero-grid,
+  .page-hero-split,
   .approach-head,
   .split,
   .visit-head,
